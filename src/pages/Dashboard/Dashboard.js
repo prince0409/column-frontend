@@ -6,6 +6,7 @@ import LoadingSpinner from "../../components/common/LoadingSpinner";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import debounce from "../../hooks/debounce";
 import { fetchAllNotices } from "../../data/noticeService";
+import usePagination from "../../hooks/usePagination";
 
 function Dashboard() {
   const [searchQuery, setSearchQuery] = useState();
@@ -13,10 +14,16 @@ function Dashboard() {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [direction, setDirection] = useState("");
-  const lastDocRef = useRef();
-  const firstDocRef = useRef();
+
+  const {
+    currentPage,
+    handleNextPage,
+    handlePrevPage,
+    direction,
+    lastDocRef,
+    firstDocRef,
+    initializePagination,
+  } = usePagination();
 
   useEffect(() => {
     const fetchNoticesData = async () => {
@@ -41,22 +48,6 @@ function Dashboard() {
     fetchNoticesData();
   }, [currentPage, searchQuery, publicationDate]);
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-    setDirection("next");
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-    setDirection("prev");
-  };
-
-  const initializePagination = () => {
-    firstDocRef.current = null;
-    lastDocRef.current = null;
-    setDirection("");
-    setCurrentPage(1);
-  };
   const handleSearch = debounce((query) => {
     setSearchQuery(query);
     initializePagination();
