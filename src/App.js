@@ -1,12 +1,12 @@
 import React from "react";
-import "./App.css";
-import { db } from "./db"; // Import this line to use the Firestore database connection
+import Routes from "./Routes"; // Import Routes component
 
 function App() {
   return (
-    <p>
-      Edit <code>src/App.js</code> and save to reload.
-    </p>
+    <div className="App">
+      <h1>Notice Dashboard</h1>
+      <Routes /> {/* Render Routes component */}
+    </div>
   );
 }
 
