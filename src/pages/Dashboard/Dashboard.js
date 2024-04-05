@@ -53,7 +53,7 @@ function Dashboard() {
   useEffect(() => {
     lastDocRef.current = refs.lastDoc;
     firstDocRef.current = refs.firstDoc;
-  }, [refs]);
+  }, [refs, lastDocRef, firstDocRef]);
 
   return (
     <div className="App">

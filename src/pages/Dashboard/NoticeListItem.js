@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const NoticeListItem = ({ notice }) => {
   return (
@@ -10,6 +11,13 @@ const NoticeListItem = ({ notice }) => {
       <Link to={`/notices/${notice.id}`}>View Details</Link>
     </div>
   );
+};
+
+NoticeListItem.propTypes = {
+  notice: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default NoticeListItem;
