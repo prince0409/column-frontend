@@ -1,12 +1,16 @@
 import {
-  doc,
-  getDoc,
   collection,
-  getDocs,
   query,
   where,
   orderBy,
+  limit,
+  startAfter,
+  getDocs,
+  doc,
+  getDoc,
+  endBefore,
 } from "firebase/firestore";
+
 import { db } from "../services/firebase/db";
 
 export const fetchNoticeById = async (id) => {
@@ -28,7 +32,13 @@ export const fetchNoticeById = async (id) => {
   }
 };
 
-export const fetchAllNotices = async ({ searchQuery, publicationDate }) => {
+export const fetchAllNotices = async ({
+  searchQuery,
+  publicationDate,
+  lastDoc,
+  firstDoc,
+  direction,
+}) => {
   try {
     let noticesRef = collection(db, "notices");
     if (searchQuery) {
@@ -40,12 +50,30 @@ export const fetchAllNotices = async ({ searchQuery, publicationDate }) => {
         where("publicationDate", "==", publicationDate)
       );
     }
-    noticesRef = query(noticesRef, orderBy("publicationDate", "desc"));
+    noticesRef = query(
+      noticesRef,
+      orderBy("publicationDate", "desc"),
+      limit(2)
+    );
+    if (lastDoc && direction === "next") {
+      noticesRef = query(noticesRef, startAfter(lastDoc));
+    }
+    if (firstDoc && direction === "prev") {
+      noticesRef = query(noticesRef, endBefore(firstDoc));
+    }
+
     const noticesSnapshot = await getDocs(noticesRef);
-    return noticesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const noticesData =
+      noticesSnapshot?.docs?.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) || [];
+
+    return {
+      data: noticesData,
+      lastDoc: noticesSnapshot.docs[noticesSnapshot.docs.length - 1],
+      firstDoc: noticesSnapshot.docs[0],
+    };
   } catch (error) {
     console.error("Error fetching notices:", error);
     throw error;

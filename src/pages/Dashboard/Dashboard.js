@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SearchBar from "./SearchBar";
 import NoticeList from "./NoticeList";
 import NewNoticeForm from "../../components/NewNoticeForm";
@@ -7,39 +7,67 @@ import ErrorMessage from "../../components/common/ErrorMessage";
 import debounce from "../../hooks/debounce";
 import { fetchAllNotices } from "../../data/noticeService";
 
-function App() {
+function Dashboard() {
   const [searchQuery, setSearchQuery] = useState();
   const [publicationDate, setPublicationDate] = useState();
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [direction, setDirection] = useState("");
+  const lastDocRef = useRef();
+  const firstDocRef = useRef();
 
   useEffect(() => {
-    const fetchNotices = async () => {
+    const fetchNoticesData = async () => {
       setLoading(true);
       try {
-        const noticesData = await fetchAllNotices({
+        const fetchedNotices = await fetchAllNotices({
           searchQuery,
           publicationDate,
+          lastDoc: lastDocRef.current,
+          firstDoc: firstDocRef.current,
+          direction,
         });
-        setNotices(noticesData);
+        setNotices(fetchedNotices.data);
+        lastDocRef.current = fetchedNotices.lastDoc;
+        firstDocRef.current = fetchedNotices.firstDoc;
       } catch (error) {
         setError(error.message);
       }
       setLoading(false);
     };
 
-    fetchNotices();
-  }, [searchQuery, publicationDate]);
+    fetchNoticesData();
+  }, [currentPage, searchQuery, publicationDate]);
 
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+    setDirection("next");
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+    setDirection("prev");
+  };
+
+  const initializePagination = () => {
+    firstDocRef.current = null;
+    lastDocRef.current = null;
+    setDirection("");
+    setCurrentPage(1);
+  };
   const handleSearch = debounce((query) => {
     setSearchQuery(query);
+    initializePagination();
   }, 500);
 
   const handlePublicationDateChange = (event) => {
     const date = event.target.value;
     setPublicationDate(date);
+    initializePagination();
   };
+
   return (
     <div className="App">
       <h1>Notice Dashboard</h1>
@@ -52,9 +80,14 @@ function App() {
       />
       {loading && <LoadingSpinner />}
       {error && <ErrorMessage message={error} />}
-      <NoticeList notices={notices} />
+      <NoticeList
+        notices={notices}
+        handlePrevPage={handlePrevPage}
+        currentPage={currentPage}
+        handleNextPage={handleNextPage}
+      />
     </div>
   );
 }
 
-export default App;
+export default Dashboard;
