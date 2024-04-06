@@ -10,13 +10,17 @@ const NoticeList = ({
 }) => {
   return (
     <div className="notice-list">
-      {notices?.map((notice) => (
-        <NoticeListItem key={notice.id} notice={notice} />
-      ))}
+      {notices?.length ? (
+        notices?.map((notice) => (
+          <NoticeListItem key={notice.id} notice={notice} />
+        ))
+      ) : (
+        <p className="content">No available data</p>
+      )}
       <div>
-        <button onClick={handlePrevPage} disabled={currentPage <= 1}>
+        {/* <button onClick={handlePrevPage} disabled={currentPage <= 1}>
           Prev Page
-        </button>
+        </button> */}
         <span className="current-page">{currentPage}</span>
         <button onClick={handleNextPage} disabled={currentPage >= maxPage}>
           Next Page

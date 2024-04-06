@@ -9,9 +9,11 @@ import { fetchAllNotices, fetchNoticesCount } from "../../data/noticeService";
 import usePagination from "../../hooks/usePagination";
 import useFetchData from "../../hooks/useFetchData";
 
+const PER_PAGE = 2;
+
 function Dashboard() {
   const [searchQuery, setSearchQuery] = useState();
-  const [publicationDate, setPublicationDate] = useState();
+  const [publicationDate, setPublicationDate] = useState("");
 
   const {
     currentPage,
@@ -21,15 +23,15 @@ function Dashboard() {
     direction,
     lastDocRef,
     firstDocRef,
-  } = usePagination();
+    perPage,
+  } = usePagination(PER_PAGE);
 
   const handleQueryChange = debounce((query) => {
     setSearchQuery(query);
     initializePagination();
   }, 500);
 
-  const handlePublicationDateChange = (event) => {
-    const date = event.target.value;
+  const handlePublicationDateChange = (date) => {
     setPublicationDate(date);
     initializePagination();
   };
@@ -46,6 +48,7 @@ function Dashboard() {
         lastDoc: lastDocRef.current,
         firstDoc: firstDocRef.current,
         direction,
+        perPage,
       }),
     [currentPage, searchQuery, publicationDate, direction]
   );
@@ -71,19 +74,22 @@ function Dashboard() {
       <h1>Notice Dashboard</h1>
       <NewNoticeForm />
       <SearchBar
+        query={searchQuery}
         handleQueryChange={handleQueryChange}
         publicationDate={publicationDate}
         handlePublicationDateChange={handlePublicationDateChange}
       />
       {loading && <LoadingSpinner />}
       {error && <ErrorMessage message={error} />}
-      <NoticeList
-        notices={notices}
-        handlePrevPage={handlePrevPage}
-        currentPage={currentPage}
-        handleNextPage={handleNextPage}
-        maxPage={Math.round(noticesCount / 2)}
-      />
+      {!loading && !error && (
+        <NoticeList
+          notices={notices}
+          handlePrevPage={handlePrevPage}
+          currentPage={currentPage}
+          handleNextPage={handleNextPage}
+          maxPage={Math.round(noticesCount / perPage)}
+        />
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ const SearchBar = ({
   handleQueryChange,
   handlePublicationDateChange,
   publicationDate,
+  query,
 }) => {
   return (
     <div className="search-bar">
@@ -12,11 +13,12 @@ const SearchBar = ({
         placeholder="Search by title..."
         onChange={(e) => handleQueryChange(e.target.value)}
         className="search-bar"
+        value={query}
       />
       <input
         type="date"
         value={publicationDate}
-        onChange={handlePublicationDateChange}
+        onChange={(e) => handlePublicationDateChange(e.target.value)}
       />
     </div>
   );

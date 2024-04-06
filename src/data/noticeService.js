@@ -39,6 +39,7 @@ export const fetchAllNotices = async ({
   lastDoc,
   firstDoc,
   direction,
+  perPage,
 }) => {
   try {
     let noticesRef = collection(db, "notices");
@@ -54,7 +55,7 @@ export const fetchAllNotices = async ({
     noticesRef = query(
       noticesRef,
       orderBy("publicationDate", "desc"),
-      limit(2)
+      limit(perPage)
     );
     if (firstDoc && direction === "prev") {
       noticesRef = query(noticesRef, endBefore(firstDoc));

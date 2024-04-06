@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 
-const usePagination = () => {
+const usePagination = (perPage) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [direction, setDirection] = useState("");
   const lastDocRef = useRef(null);
@@ -31,6 +31,7 @@ const usePagination = () => {
     lastDocRef,
     firstDocRef,
     initializePagination,
+    perPage,
   };
 };
 

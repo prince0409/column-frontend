@@ -34,6 +34,14 @@ button:hover {
   background-color: #0056b3;
 }
 
+button:disabled,
+button[disabled] {
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+  cursor: default;
+}
+
 /* Notice Dashboard Styles */
 .notice-dashboard {
   padding: 2rem;
@@ -89,9 +97,14 @@ button:hover {
 .notice-list {
   margin-bottom: 20px;
 }
+.notice-list .content {
+  margin-bottom: 20px;
+}
 .notice-list .current-page {
   margin-right: 10px;
-  margin-left: 10px;
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
 }
 .notice-list-item {
   background-color: #fff;
