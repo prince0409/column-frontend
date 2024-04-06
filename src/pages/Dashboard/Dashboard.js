@@ -5,7 +5,7 @@ import NewNoticeForm from "../../components/NewNoticeForm";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import debounce from "../../hooks/debounce";
-import { fetchAllNotices } from "../../data/noticeService";
+import { fetchAllNotices, fetchNoticesCount } from "../../data/noticeService";
 import usePagination from "../../hooks/usePagination";
 import useFetchData from "../../hooks/useFetchData";
 
@@ -23,7 +23,7 @@ function Dashboard() {
     firstDocRef,
   } = usePagination();
 
-  const handleSearch = debounce((query) => {
+  const handleQueryChange = debounce((query) => {
     setSearchQuery(query);
     initializePagination();
   }, 500);
@@ -47,7 +47,18 @@ function Dashboard() {
         firstDoc: firstDocRef.current,
         direction,
       }),
-    [currentPage, searchQuery, publicationDate]
+    [currentPage, searchQuery, publicationDate, direction]
+  );
+
+  const {
+    data: { count: noticesCount },
+  } = useFetchData(
+    () =>
+      fetchNoticesCount({
+        searchQuery,
+        publicationDate,
+      }),
+    [searchQuery, publicationDate]
   );
 
   useEffect(() => {
@@ -56,14 +67,13 @@ function Dashboard() {
   }, [refs, lastDocRef, firstDocRef]);
 
   return (
-    <div className="App">
+    <div className="notice-dashboard">
       <h1>Notice Dashboard</h1>
       <NewNoticeForm />
-      <SearchBar handleSearch={handleSearch} />
-      <input
-        type="date"
-        value={publicationDate}
-        onChange={handlePublicationDateChange}
+      <SearchBar
+        handleQueryChange={handleQueryChange}
+        publicationDate={publicationDate}
+        handlePublicationDateChange={handlePublicationDateChange}
       />
       {loading && <LoadingSpinner />}
       {error && <ErrorMessage message={error} />}
@@ -72,6 +82,7 @@ function Dashboard() {
         handlePrevPage={handlePrevPage}
         currentPage={currentPage}
         handleNextPage={handleNextPage}
+        maxPage={Math.round(noticesCount / 2)}
       />
     </div>
   );

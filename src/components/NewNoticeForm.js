@@ -34,7 +34,7 @@ const NewNoticeForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="notice-form">
       <input
         type="text"
         name="title"

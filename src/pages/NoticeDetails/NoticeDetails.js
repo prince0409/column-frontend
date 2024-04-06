@@ -15,17 +15,19 @@ const NoticeDetails = () => {
 
   return (
     <div className="notice-details">
-      <h2>Notice Details</h2>
-      {loading && <LoadingSpinner />}
-      {error && <ErrorMessage message={error} />}
-      {!loading && !error && notice && (
-        <>
-          <h3>{notice.title}</h3>
-          <p>{notice.content}</p>
-          <p>{notice.publicationDate}</p>
-        </>
-      )}
-      <Link to={`/`}>Back to Dashboard</Link>
+      <h1>Notice Details</h1>
+      <div className="content">
+        {loading && <LoadingSpinner />}
+        {error && <ErrorMessage message={error} />}
+        {!loading && !error && notice && (
+          <>
+            <h3>{notice.title}</h3>
+            <p>{notice.content}</p>
+            <p>{notice.publicationDate}</p>
+          </>
+        )}
+        <Link to={`/`}>Back to Dashboard</Link>
+      </div>
     </div>
   );
 };

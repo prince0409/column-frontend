@@ -6,6 +6,7 @@ const NoticeList = ({
   handlePrevPage,
   currentPage,
   handleNextPage,
+  maxPage,
 }) => {
   return (
     <div className="notice-list">
@@ -13,10 +14,13 @@ const NoticeList = ({
         <NoticeListItem key={notice.id} notice={notice} />
       ))}
       <div>
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+        <button onClick={handlePrevPage} disabled={currentPage <= 1}>
           Prev Page
         </button>
-        <button onClick={handleNextPage}>Next Page</button>
+        <span className="current-page">{currentPage}</span>
+        <button onClick={handleNextPage} disabled={currentPage >= maxPage}>
+          Next Page
+        </button>
       </div>
     </div>
   );

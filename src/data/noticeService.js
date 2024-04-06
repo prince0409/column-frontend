@@ -3,12 +3,13 @@ import {
   query,
   where,
   orderBy,
-  limit,
   startAfter,
   getDocs,
   doc,
   getDoc,
   endBefore,
+  limit,
+  getCountFromServer,
 } from "firebase/firestore";
 
 import { db } from "../services/firebase/db";
@@ -55,11 +56,11 @@ export const fetchAllNotices = async ({
       orderBy("publicationDate", "desc"),
       limit(2)
     );
-    if (lastDoc && direction === "next") {
-      noticesRef = query(noticesRef, startAfter(lastDoc));
-    }
     if (firstDoc && direction === "prev") {
       noticesRef = query(noticesRef, endBefore(firstDoc));
+    }
+    if (lastDoc && direction === "next") {
+      noticesRef = query(noticesRef, startAfter(lastDoc));
     }
 
     const noticesSnapshot = await getDocs(noticesRef);
@@ -76,6 +77,27 @@ export const fetchAllNotices = async ({
     };
   } catch (error) {
     console.error("Error fetching notices:", error);
+    throw error;
+  }
+};
+
+export const fetchNoticesCount = async ({ searchQuery, publicationDate }) => {
+  try {
+    let noticesRef = collection(db, "notices");
+    if (searchQuery) {
+      noticesRef = query(noticesRef, where("title", "==", searchQuery));
+    }
+    if (publicationDate) {
+      noticesRef = query(
+        noticesRef,
+        where("publicationDate", "==", publicationDate)
+      );
+    }
+    const countSnapshot = await getCountFromServer(noticesRef);
+
+    return countSnapshot.data();
+  } catch (error) {
+    console.error("Error fetching notices count:", error);
     throw error;
   }
 };

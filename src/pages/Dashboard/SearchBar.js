@@ -1,12 +1,24 @@
 import React from "react";
 
-const SearchBar = ({ handleSearch }) => {
+const SearchBar = ({
+  handleQueryChange,
+  handlePublicationDateChange,
+  publicationDate,
+}) => {
   return (
-    <input
-      type="text"
-      placeholder="Search by title..."
-      onChange={(e) => handleSearch(e.target.value)}
-    />
+    <div className="search-bar">
+      <input
+        type="text"
+        placeholder="Search by title..."
+        onChange={(e) => handleQueryChange(e.target.value)}
+        className="search-bar"
+      />
+      <input
+        type="date"
+        value={publicationDate}
+        onChange={handlePublicationDateChange}
+      />
+    </div>
   );
 };
 
